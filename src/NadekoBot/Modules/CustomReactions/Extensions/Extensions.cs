@@ -90,6 +90,11 @@ namespace NadekoBot.Modules.CustomReactions.Extensions
             return Regex.Match(text, cr.ContainsAnywhere ? cr.Trigger : $"^#{cr.Trigger}$");
         }
 
+        public static String DisplayId(this CustomReaction cr)
+        {
+            return $"#{cr.Id}{(cr.IsRegex ? "r" : "")}";
+        }
+
         public static async Task<IUserMessage> Send(this CustomReaction cr, IUserMessage ctx, DiscordSocketClient client, CustomReactionsService crs)
         {
             var channel = cr.DmResponse ? await ctx.Author.GetOrCreateDMChannelAsync() : ctx.Channel;

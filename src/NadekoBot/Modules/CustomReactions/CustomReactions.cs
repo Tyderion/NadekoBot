@@ -10,6 +10,7 @@ using System;
 using System.Text.RegularExpressions;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Modules.CustomReactions.Services;
+using NadekoBot.Modules.CustomReactions.Extensions;
 
 namespace NadekoBot.Modules.CustomReactions
 {
@@ -105,7 +106,7 @@ namespace NadekoBot.Modules.CustomReactions
 
             await Context.Channel.EmbedAsync(new EmbedBuilder().WithOkColor()
                 .WithTitle(GetText("new_cust_react"))
-                .WithDescription($"#{cr.Id}{(cr.IsRegex ? "r" : "")}")
+                .WithDescription(cr.DisplayId())
                 .AddField(efb => efb.WithName(GetText("trigger")).WithValue(cr.Trigger))
                 .AddField(efb => efb.WithName(GetText("response")).WithValue(cr.Response.Length > 1024 ? GetText("redacted_too_long") : cr.Response))
                 ).ConfigureAwait(false);
@@ -138,7 +139,7 @@ namespace NadekoBot.Modules.CustomReactions
                                                     .Take(20)
                                                     .Select(cr =>
                                                     {
-                                                        var str = $"`#{cr.Id}{(cr.IsRegex ? "r" : "")}` {cr.Trigger}";
+                                                        var str = $"`{cr.DisplayId()}` {cr.Trigger}";
                                                         if (cr.AutoDeleteTrigger)
                                                         {
                                                             str = "🗑" + str;

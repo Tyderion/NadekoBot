@@ -35,7 +35,7 @@ namespace NadekoBot.Common.Replacements
         {
             cr.MatchString(message).Groups.Cast<Group>()
                 .Skip(1)
-                .ForEach(group => _reps.TryAdd("%" + group.Name + "%", () => group.Value));
+                .ForEach(group => _reps.TryAdd($"%{group.Name}%", () => group.Value));
             return this;
         }
 
