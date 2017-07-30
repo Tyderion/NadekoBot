@@ -28,28 +28,57 @@ namespace NadekoBot.Modules.CustomReactions
         }
 
         [NadekoCommand, Usage, Description, Aliases]
+        public async Task AddCustRegexReact(string key, [Remainder] string message)
+        {
+            if (string.IsNullOrWhiteSpace(message) || string.IsNullOrWhiteSpace(key))
+                return;
+
+            Match isRegex = Regex.Match(key, "^/(.+)/$");
+            if (!isRegex.Success)
+            {
+                await AddCustReact(key, message);
+            } else
+            {
+
+                var cr = new CustomReaction()
+                {
+                    IsRegex = isRegex.Success,
+                    Trigger = isRegex.Success ? isRegex.Groups.Cast<Group>().Skip(1).Single().Value : key,
+                    Response = message,
+                };
+
+                await addCustomReaction(cr);
+            }
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
         public async Task AddCustReact(string key, [Remainder] string message)
         {
-            var channel = Context.Channel as ITextChannel;
             if (string.IsNullOrWhiteSpace(message) || string.IsNullOrWhiteSpace(key))
                 return;
 
             key = key.ToLowerInvariant();
+            var cr = new CustomReaction()
+            {
+                IsRegex = false,
+                Trigger = key,
+                Response = message,
+            };
+
+            await addCustomReaction(cr);
+        }
+
+        private async Task addCustomReaction(CustomReaction cr)
+        {
+            var channel = Context.Channel as ITextChannel;
+
+            cr.GuildId = channel?.Guild.Id;
 
             if ((channel == null && !_creds.IsOwner(Context.User)) || (channel != null && !((IGuildUser)Context.User).GuildPermissions.Administrator))
             {
                 await ReplyErrorLocalized("insuff_perms").ConfigureAwait(false);
                 return;
             }
-            Match isRegex = Regex.Match(key, "^/(.+)/$");
-            var cr = new CustomReaction()
-            {
-                GuildId = channel?.Guild.Id,
-                IsRegex = isRegex.Success,
-                Trigger = isRegex.Success ? isRegex.Groups.Cast<Group>().Skip(1).Single().Value : key,
-                Response = message,
-            };
-
             using (var uow = _db.UnitOfWork)
             {
                 uow.CustomReactions.Add(cr);
@@ -76,9 +105,9 @@ namespace NadekoBot.Modules.CustomReactions
 
             await Context.Channel.EmbedAsync(new EmbedBuilder().WithOkColor()
                 .WithTitle(GetText("new_cust_react"))
-                .WithDescription($"#{cr.Id}")
-                .AddField(efb => efb.WithName(GetText("trigger")).WithValue(key))
-                .AddField(efb => efb.WithName(GetText("response")).WithValue(message.Length > 1024 ? GetText("redacted_too_long") : message))
+                .WithDescription($"#{cr.Id}{(cr.IsRegex ? "r" : "")}")
+                .AddField(efb => efb.WithName(GetText("trigger")).WithValue(cr.Trigger))
+                .AddField(efb => efb.WithName(GetText("response")).WithValue(cr.Response.Length > 1024 ? GetText("redacted_too_long") : cr.Response))
                 ).ConfigureAwait(false);
         }
 
@@ -109,7 +138,7 @@ namespace NadekoBot.Modules.CustomReactions
                                                     .Take(20)
                                                     .Select(cr =>
                                                     {
-                                                        var str = $"`#{cr.Id}` {cr.Trigger}";
+                                                        var str = $"`#{cr.Id}{(cr.IsRegex ? "r" : "")}` {cr.Trigger}";
                                                         if (cr.AutoDeleteTrigger)
                                                         {
                                                             str = "🗑" + str;
