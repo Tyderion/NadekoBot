@@ -81,6 +81,15 @@ namespace NadekoBot.Modules.CustomReactions.Extensions
         public static Task<string > ResponseWithContextAsync(this CustomReaction cr, IUserMessage ctx, DiscordSocketClient client)
             => cr.Response.ResolveResponseStringAsync(ctx, client, cr.Trigger.ResolveTriggerString(ctx, client), cr);
 
+        public static Match MatchString(this CustomReaction cr, String text)
+        {
+            if (!cr.IsRegex)
+            {
+                return Match.Empty;
+            }
+            return Regex.Match(text, cr.ContainsAnywhere ? cr.Trigger : "^" + cr.Trigger + "$");
+        }
+
         public static async Task<IUserMessage> Send(this CustomReaction cr, IUserMessage ctx, DiscordSocketClient client, CustomReactionsService crs)
         {
             var channel = cr.DmResponse ? await ctx.Author.GetOrCreateDMChannelAsync() : ctx.Channel;

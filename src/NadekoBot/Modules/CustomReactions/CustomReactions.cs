@@ -40,12 +40,12 @@ namespace NadekoBot.Modules.CustomReactions
                 await ReplyErrorLocalized("insuff_perms").ConfigureAwait(false);
                 return;
             }
-
+            bool isRegex = key.StartsWith("/") && key.EndsWith("/");
             var cr = new CustomReaction()
             {
                 GuildId = channel?.Guild.Id,
-                IsRegex = false,
-                Trigger = key,
+                IsRegex = isRegex,
+                Trigger = isRegex ? key.Substring(1, key.Length - 2) : key,
                 Response = message,
             };
 

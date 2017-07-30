@@ -8,6 +8,7 @@ using Discord.WebSocket;
 using NadekoBot.Extensions;
 using NadekoBot.Modules.Administration.Services;
 using NadekoBot.Modules.Music.Services;
+using NadekoBot.Modules.CustomReactions.Extensions;
 
 namespace NadekoBot.Common.Replacements
 {
@@ -32,19 +33,9 @@ namespace NadekoBot.Common.Replacements
 
         public ReplacementBuilder WithRegex(Services.Database.Models.CustomReaction cr, String message)
         {
-            String regex = cr.Trigger;
-            if (!cr.ContainsAnywhere)
-            {
-                regex = "^" + regex + "$";
-            }
-            Match match = Regex.Match(message, regex);
-            if (match.Groups.Count > 1)
-            {
-                foreach (var group in match.Groups.Cast<Group>().Skip(1))
-                {
-                    _reps.TryAdd("%"+group.Name + "%", () => group.Value);
-                }
-            }
+            cr.MatchString(message).Groups.Cast<Group>()
+                .Skip(1)
+                .ForEach(group => _reps.TryAdd("%" + group.Name + "%", () => group.Value));
             return this;
         }
 
