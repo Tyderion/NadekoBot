@@ -7,6 +7,7 @@ using Discord;
 using NadekoBot.Extensions;
 using Discord.WebSocket;
 using System;
+using System.Text.RegularExpressions;
 using NadekoBot.Common.Attributes;
 using NadekoBot.Modules.CustomReactions.Services;
 
@@ -40,12 +41,12 @@ namespace NadekoBot.Modules.CustomReactions
                 await ReplyErrorLocalized("insuff_perms").ConfigureAwait(false);
                 return;
             }
-            bool isRegex = key.StartsWith("/") && key.EndsWith("/");
+            Match isRegex = Regex.Match(key, "^/(.+)/$");
             var cr = new CustomReaction()
             {
                 GuildId = channel?.Guild.Id,
-                IsRegex = isRegex,
-                Trigger = isRegex ? key.Substring(1, key.Length - 2) : key,
+                IsRegex = isRegex.Success,
+                Trigger = isRegex.Success ? isRegex.Groups.Cast<Group>().Skip(1).Single().Value : key,
                 Response = message,
             };
 
