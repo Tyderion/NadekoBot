@@ -30,6 +30,24 @@ namespace NadekoBot.Common.Replacements
                 .WithClient(client);
         }
 
+        public ReplacementBuilder WithRegex(Services.Database.Models.CustomReaction cr, String message)
+        {
+            String regex = cr.Trigger;
+            if (!cr.ContainsAnywhere)
+            {
+                regex = "^" + regex + "$";
+            }
+            Match match = Regex.Match(message, regex);
+            if (match.Groups.Count > 1)
+            {
+                foreach (var group in match.Groups.Cast<Group>().Skip(1))
+                {
+                    _reps.TryAdd("%"+group.Name + "%", () => group.Value);
+                }
+            }
+            return this;
+        }
+
         public ReplacementBuilder WithDefault(ICommandContext ctx) =>
             WithDefault(ctx.User, ctx.Channel, ctx.Guild, (DiscordSocketClient)ctx.Client);
 

@@ -58,11 +58,12 @@ namespace NadekoBot.Modules.CustomReactions.Extensions
             return str;
         }
 
-        private static async Task<string> ResolveResponseStringAsync(this string str, IUserMessage ctx, DiscordSocketClient client, string resolvedTrigger)
+        private static async Task<string> ResolveResponseStringAsync(this string str, IUserMessage ctx, DiscordSocketClient client, string resolvedTrigger, CustomReaction cr)
         {
             var rep = new ReplacementBuilder()
                 .WithDefault(ctx.Author, ctx.Channel, (ctx.Channel as ITextChannel)?.Guild, client)
                 .WithOverride("%target%", () => ctx.Content.Substring(resolvedTrigger.Length).Trim())
+                .WithRegex(cr, ctx.Content)
                 .Build();
 
             str = rep.Replace(str);
@@ -78,7 +79,7 @@ namespace NadekoBot.Modules.CustomReactions.Extensions
             => cr.Trigger.ResolveTriggerString(ctx, client);
 
         public static Task<string > ResponseWithContextAsync(this CustomReaction cr, IUserMessage ctx, DiscordSocketClient client)
-            => cr.Response.ResolveResponseStringAsync(ctx, client, cr.Trigger.ResolveTriggerString(ctx, client));
+            => cr.Response.ResolveResponseStringAsync(ctx, client, cr.Trigger.ResolveTriggerString(ctx, client), cr);
 
         public static async Task<IUserMessage> Send(this CustomReaction cr, IUserMessage ctx, DiscordSocketClient client, CustomReactionsService crs)
         {

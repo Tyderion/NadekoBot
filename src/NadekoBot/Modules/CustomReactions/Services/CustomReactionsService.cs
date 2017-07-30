@@ -75,15 +75,14 @@ namespace NadekoBot.Modules.CustomReactions.Services
                         {
                             regex = "^" + regex+"$";
                         }
-                        Match match = Regex.Match(content, regex);
-                        return (match.Success 
-                            || (cr.ContainsAnywhere && 
+                        return ((cr.ContainsAnywhere && 
                                 (content.StartsWith(trigger + " ") 
                                     || content.EndsWith(" " + trigger) 
                                     || content.Contains(" " + trigger + " "))) 
                             || (hasTarget && content.StartsWith(trigger + " ")) 
                             || (_bc.BotConfig.CustomReactionsStartWith && content.StartsWith(trigger + " "))  
-                            || content == trigger);
+                            || content == trigger 
+                            || Regex.Match(content, regex).Success);
                     }).ToArray();
 
                     if (rs.Length != 0)
