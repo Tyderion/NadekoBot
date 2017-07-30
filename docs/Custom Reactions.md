@@ -27,6 +27,11 @@ There's no special requirement for the formatting of the response, so we could j
 
 Now, if that command was ran in a server, anyone on that server can make the bot mention them, saying `It sure is, @Username` anytime they say "Nice Weather". If the command is ran in a direct message with the bot, then the custom reaction can be used on every server the bot is connected to.  
 
+##### Regex
+To use Regex inside your reactions, surround the trigger with forward slashes, e.g. `"/f([u]+)n/"`. Additionally You can use groups and reference them in the response by using `%1%` where `1` is the group number, e.g. `Having %1% with Regex.
+
+So the command `.acr  /f([u]+)n/  Having f%1%%1%n with Regex` would trigger on `fun` and respond with `Having fuun with Regex`.
+
 ###Block global Custom Reactions
 If you want to disable some global custom reactions which you do not like, and you do not want to remove them or you are not the bot owner you can do so by adding a new Custom Reaction with the same trigger on your server, and set the response to `-`.
 
