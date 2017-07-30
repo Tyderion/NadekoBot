@@ -9,6 +9,7 @@ You must also use the commands for adding, deleting and listing these reactions 
 | Command Name | Description | Example |
 |:------------:|-------------|---------|
 |`.acr`|Add a custom reaction with a trigger and a response. Running this command in a server requries the Administrator permission. Running this command in DM is Bot Owner only, and adds a new global custom reaction. Guide [here](http://nadekobot.readthedocs.io/en/1.0/Custom%20Reactions/)|`.acr "hello" Hi there, %user%!`|
+|`.acrr`|Add a custom regex reaction with a trigger and a response. Running this command in a server requries the Administrator permission. Running this command in DM is Bot Owner only, and adds a new global custom reaction. Guide [here](http://nadekobot.readthedocs.io/en/1.0/Custom%20Reactions/)|`.acr "/h(el)lo/" Contains %1%`|
 |`.lcr`|Lists a page of global or server custom reactions (15 reactions per page). Running this command in a DM will list the global custom reactions, while running it in a server will list that server's custom reactions.|`.lcr 1`|
 |`.dcr`|Deletes a custom reaction based on the provided index. Running this command in a server requires the Administrator permission. Running this command in DM is Bot Owner only, and will delete a global custom reaction.|`.dcr 5`|
 
@@ -27,10 +28,14 @@ There's no special requirement for the formatting of the response, so we could j
 
 Now, if that command was ran in a server, anyone on that server can make the bot mention them, saying `It sure is, @Username` anytime they say "Nice Weather". If the command is ran in a direct message with the bot, then the custom reaction can be used on every server the bot is connected to.  
 
-##### Regex
-To use Regex inside your reactions, surround the trigger with forward slashes, e.g. `"/f([u]+)n/"`. Additionally You can use groups and reference them in the response by using `%1%` where `1` is the group number, e.g. `Having %1% with Regex.
+#### Regex Triggers
+`.acrr  "/f([u]+)n/"  Having f%1%%1%n with Regex`
 
-So the command `.acr  /f([u]+)n/  Having f%1%%1%n with Regex` would trigger on `fun` and respond with `Having fuun with Regex`.
+* 	 The trigger, `"/f([u]+)n/"`  
+* 	 And the response, `Having f%1%%1%n with Regex`  
+
+This triggers all messages that match the regex `f([u]+)n` and sends back the response, replacing regex backreferences.
+To reference groups use `%1%` where `1` is the group number, e.g. `%2% %3%`
 
 ###Block global Custom Reactions
 If you want to disable some global custom reactions which you do not like, and you do not want to remove them or you are not the bot owner you can do so by adding a new Custom Reaction with the same trigger on your server, and set the response to `-`.
