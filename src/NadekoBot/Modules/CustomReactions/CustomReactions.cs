@@ -222,15 +222,16 @@ namespace NadekoBot.Modules.CustomReactions
         }
 
         [NadekoCommand, Usage, Description, Aliases]
-        public async Task ShowCustReact(int id)
+        public async Task ShowCustReact(String id)
         {
+            int parsedId = int.Parse(id.Replace("r", ""));
             CustomReaction[] customReactions;
             if (Context.Guild == null)
                 customReactions = _service.GlobalReactions;
             else
                 customReactions = _service.GuildReactions.GetOrAdd(Context.Guild.Id, new CustomReaction[]{ });
 
-            var found = customReactions.FirstOrDefault(cr => cr?.Id == id);
+            var found = customReactions.FirstOrDefault(cr => cr?.Id == parsedId);
 
             if (found == null)
             {
@@ -240,7 +241,7 @@ namespace NadekoBot.Modules.CustomReactions
             else
             {
                 await Context.Channel.EmbedAsync(new EmbedBuilder().WithOkColor()
-                    .WithDescription($"#{id}")
+                    .WithDescription(found.DisplayId())
                     .AddField(efb => efb.WithName(GetText("trigger")).WithValue(found.Trigger))
                     .AddField(efb => efb.WithName(GetText("response")).WithValue(found.Response + "\n```css\n" + found.Response + "```"))
                     ).ConfigureAwait(false);
