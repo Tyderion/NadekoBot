@@ -248,7 +248,7 @@ namespace NadekoBot.Modules.CustomReactions
         }
 
         [NadekoCommand, Usage, Description, Aliases]
-        public async Task DelCustReact(int id)
+        public async Task DelCustReact(string id)
         {
             if ((Context.Guild == null && !_creds.IsOwner(Context.User)) || (Context.Guild != null && !((IGuildUser)Context.User).GuildPermissions.Administrator))
             {
@@ -258,9 +258,10 @@ namespace NadekoBot.Modules.CustomReactions
 
             var success = false;
             CustomReaction toDelete;
+            int parsedId = int.Parse(id.Replace("r", ""));
             using (var uow = _db.UnitOfWork)
             {
-                toDelete = uow.CustomReactions.Get(id);
+                toDelete = uow.CustomReactions.Get(parsedId);
                 if (toDelete == null) //not found
                     success = false;
                 else
@@ -290,7 +291,7 @@ namespace NadekoBot.Modules.CustomReactions
             {
                 await Context.Channel.EmbedAsync(new EmbedBuilder().WithOkColor()
                     .WithTitle(GetText("deleted"))
-                    .WithDescription("#" + toDelete.Id)
+                    .WithDescription(toDelete.DisplayId())
                     .AddField(efb => efb.WithName(GetText("trigger")).WithValue(toDelete.Trigger))
                     .AddField(efb => efb.WithName(GetText("response")).WithValue(toDelete.Response)));
             }
