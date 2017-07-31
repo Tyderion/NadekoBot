@@ -35,7 +35,8 @@ Now, if that command was ran in a server, anyone on that server can make the bot
 * 	 And the response, `Having f%1%%1%n with Regex`  
 
 This triggers all messages that match the regex `f([u]+)n` and sends back the response, replacing regex backreferences.
-To reference groups use `%1%` where `1` is the group number, e.g. `%2% %3%`
+To reference groups use `%1%` where `1` is the group number, e.g. `%2% %3%`.
+Alternatively you can use named groups (e.g. `f(?<allus>[u]+)n`) and them reference them by name `%allus%`. But try to not use any of the default replacements like `%user%`, those referecnes will be replaced by their normal refs.
 
 ###Block global Custom Reactions
 If you want to disable some global custom reactions which you do not like, and you do not want to remove them or you are not the bot owner you can do so by adding a new Custom Reaction with the same trigger on your server, and set the response to `-`.
