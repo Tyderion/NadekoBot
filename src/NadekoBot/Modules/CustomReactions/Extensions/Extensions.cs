@@ -58,12 +58,12 @@ namespace NadekoBot.Modules.CustomReactions.Extensions
             return str;
         }
 
-        private static async Task<string> ResolveResponseStringAsync(this string str, IUserMessage ctx, DiscordSocketClient client, string resolvedTrigger, CustomReaction cr)
+        private static async Task<string> ResolveResponseStringAsync(this string str, IUserMessage ctx, DiscordSocketClient client, string resolvedTrigger, CustomReaction cr, String prefix)
         {
             var rep = new ReplacementBuilder()
                 .WithDefault(ctx.Author, ctx.Channel, (ctx.Channel as ITextChannel)?.Guild, client)
                 .WithOverride("%target%", () => ctx.Content.Substring(resolvedTrigger.Length).Trim())
-                .WithRegex(cr, ctx.Content)
+                .WithRegex(cr, ctx.Content, prefix)
                 .Build();
 
             str = rep.Replace(str);
@@ -78,16 +78,16 @@ namespace NadekoBot.Modules.CustomReactions.Extensions
         public static string TriggerWithContext(this CustomReaction cr, IUserMessage ctx, DiscordSocketClient client)
             => cr.Trigger.ResolveTriggerString(ctx, client);
 
-        public static Task<string > ResponseWithContextAsync(this CustomReaction cr, IUserMessage ctx, DiscordSocketClient client)
-            => cr.Response.ResolveResponseStringAsync(ctx, client, cr.Trigger.ResolveTriggerString(ctx, client), cr);
+        public static Task<string > ResponseWithContextAsync(this CustomReaction cr, IUserMessage ctx, DiscordSocketClient client, String prefix)
+            => cr.Response.ResolveResponseStringAsync(ctx, client, cr.Trigger.ResolveTriggerString(ctx, client), cr, prefix);
 
-        public static Match MatchString(this CustomReaction cr, String text)
+        public static Match MatchString(this CustomReaction cr, String text, String prefix)
         {
             if (!cr.IsRegex)
             {
                 return Match.Empty;
             }
-            return Regex.Match(text, cr.ContainsAnywhere ? cr.Trigger : $"^(?:[^.]){cr.Trigger}$");
+            return Regex.Match(text, cr.ContainsAnywhere ? cr.Trigger : $"^(?:[^{prefix}]){cr.Trigger}$");
         }
 
         public static String DisplayId(this CustomReaction cr)
@@ -112,7 +112,7 @@ namespace NadekoBot.Modules.CustomReactions.Extensions
 
                 return await channel.EmbedAsync(crembed.ToEmbed(), crembed.PlainText?.SanitizeMentions() ?? "");
             }
-            return await channel.SendMessageAsync((await cr.ResponseWithContextAsync(ctx, client)).SanitizeMentions());
+            return await channel.SendMessageAsync((await cr.ResponseWithContextAsync(ctx, client, crs.GetPrefix((ctx.Channel as ITextChannel)?.Guild))).SanitizeMentions());
         }
     }
 }

@@ -31,9 +31,9 @@ namespace NadekoBot.Common.Replacements
                 .WithClient(client);
         }
 
-        public ReplacementBuilder WithRegex(Services.Database.Models.CustomReaction cr, String message)
+        public ReplacementBuilder WithRegex(Services.Database.Models.CustomReaction cr, String message, String prefix)
         {
-            cr.MatchString(message).Groups.Cast<Group>()
+            cr.MatchString(message, prefix).Groups.Cast<Group>()
                 .Skip(1)
                 .ForEach(group => _reps.TryAdd($"%{group.Name}%", () => group.Value));
             return this;

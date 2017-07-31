@@ -77,7 +77,7 @@ namespace NadekoBot.Modules.CustomReactions.Services
                             || (hasTarget && content.StartsWith(trigger + " ")) 
                             || (_bc.BotConfig.CustomReactionsStartWith && content.StartsWith(trigger + " "))  
                             || content == trigger 
-                            || cr.MatchString(content).Success);
+                            || cr.MatchString(content, GetPrefix(channel?.Guild)).Success);
                     }).ToArray();
 
                     if (rs.Length != 0)
@@ -105,6 +105,11 @@ namespace NadekoBot.Modules.CustomReactions.Services
             var greaction = grs[new NadekoRandom().Next(0, grs.Length)];
 
             return greaction;
+        }
+
+        public string GetPrefix(IGuild guild)
+        {
+            return _cmd.GetPrefix(guild);
         }
 
         public async Task<bool> TryExecuteEarly(DiscordSocketClient client, IGuild guild, IUserMessage msg)
