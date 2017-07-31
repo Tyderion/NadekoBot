@@ -87,7 +87,7 @@ namespace NadekoBot.Modules.CustomReactions.Extensions
             {
                 return Match.Empty;
             }
-            return Regex.Match(text, cr.ContainsAnywhere ? cr.Trigger : $"^#{cr.Trigger}$");
+            return Regex.Match(text, cr.ContainsAnywhere ? cr.Trigger : $"^{cr.Trigger}$");
         }
 
         public static String DisplayId(this CustomReaction cr)
